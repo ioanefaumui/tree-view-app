@@ -1,0 +1,33 @@
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 0.75rem;
+  padding-block: 1rem;
+  background-color: #17192d;
+  color: var(--var-white);
+
+  ul,
+  a {
+    display: flex;
+  }
+
+  ul {
+    align-items: center;
+    column-gap: 0.625rem;
+
+    a {
+      display: flex;
+      align-items: center;
+      column-gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      line-height: 1.334;
+      letter-spacing: 0.1px;
+      padding-inline: 0.5rem;
+      padding-block: 0.25rem;
+      border-radius: 2px;
+      background-color: var(--var-blue-900);
+    }
+  }
+}
