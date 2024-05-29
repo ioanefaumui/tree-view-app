@@ -1,4 +1,20 @@
+@import url("./reset.css");
+
+:root {
+  /* Shapes */
+  --var-platform-header: #17192d;
+
+  /* Blue */
+  --var-blue-500: #2188ff;
+  --var-blue-900: #023b78;
+
+  /* Neutral Colors */
+  --var-white: #ffffff;
+
+  /* Font */
+  --var-font-text: sans-serif;
+}
+
 body {
-  margin: 0;
-  font-family: sans-serif;
+  font-family: var(--var-font-text);
 }
