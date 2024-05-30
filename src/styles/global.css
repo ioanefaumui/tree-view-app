@@ -3,6 +3,7 @@
 :root {
   /* Shapes */
   --var-platform-header: #17192d;
+  --var-border-card: #d8dfe6;
 
   /* Blue */
   --var-blue-500: #2188ff;
@@ -10,11 +11,31 @@
 
   /* Neutral Colors */
   --var-white: #ffffff;
+  --var-gray-150: #e3eaef;
+  --var-gray-600: #77818c;
 
   /* Font */
   --var-font-text: sans-serif;
+
+  /* Writing */
+  --var-title: #24292f;
+  --var-placeholder-disable: #c1c9d2;
 }
 
 body {
   font-family: var(--var-font-text);
+  background-color: var(--var-gray-150);
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--var-title);
+  font-weight: 600;
 }
