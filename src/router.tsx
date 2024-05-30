@@ -4,11 +4,11 @@ import { MainLayout } from "./layouts";
 
 export const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/ativos",
     element: <MainLayout />,
     children: [
       {
-        path: "/",
+        path: "/ativos",
         element: <Assets />,
       },
     ],
