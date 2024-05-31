@@ -1,3 +1,10 @@
+import { AssetLayout } from "../layouts";
+
 export function Assets() {
-  return <main>Assets</main>;
+  return (
+    <AssetLayout.Root>
+      <AssetLayout.Header />
+      <AssetLayout.Content />
+    </AssetLayout.Root>
+  );
 }
