@@ -14,45 +14,35 @@ export const buildTree = (
       type: "location",
       children: [],
       level: 0, // Temporary level, will be updated
+      isExpanded: true, // Initially expanded
     });
     totalNodes += 1; // Increment node count for each location
   });
 
   // Initialize the asset map and classify assets and components
   assets.forEach((asset) => {
+    const baseAsset = {
+      ...asset,
+      children: [],
+      level: 0, // Temporary level, will be updated
+      isExpanded: true, // Initially expanded
+    };
+
     if (asset.sensorType) {
       // It's a component
-      assetMap.set(asset.id, {
-        ...asset,
-        type: "component",
-        children: [],
-        level: 0, // Temporary level, will be updated
-      });
+      baseAsset.type = "component";
     } else if (asset.parentId) {
       // It's a sub-asset
-      assetMap.set(asset.id, {
-        ...asset,
-        type: "asset",
-        children: [],
-        level: 0, // Temporary level, will be updated
-      });
+      baseAsset.type = "asset";
     } else if (asset.locationId) {
       // It's an asset with a location
-      assetMap.set(asset.id, {
-        ...asset,
-        type: "asset",
-        children: [],
-        level: 0, // Temporary level, will be updated
-      });
+      baseAsset.type = "asset";
     } else {
       // Unlinked asset/component
-      assetMap.set(asset.id, {
-        ...asset,
-        type: "unlinked",
-        children: [],
-        level: 0, // Temporary level, will be updated
-      });
+      baseAsset.type = "unlinked";
     }
+
+    assetMap.set(asset.id, baseAsset);
     totalNodes += 1; // Increment node count for each asset/component
   });
 
@@ -69,6 +59,7 @@ export const buildTree = (
       const location = locationMap.get(asset.locationId);
       if (location) {
         location.children.push(asset);
+        asset.parentId = asset.locationId; // Set the parentId for the asset
       }
     } else if (asset.parentId) {
       const parentAsset = assetMap.get(asset.parentId);
