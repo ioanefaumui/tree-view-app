@@ -1,29 +1,43 @@
-interface LocationNode {
+export interface ITreeNode {
   id: string;
   name: string;
-  parentId: string | null;
+  parentId?: string;
+  locationId?: string;
+  sensorId?: string;
+  sensorType?: string;
+  status?: string;
+  children?: ITreeNode[];
 }
 
-interface AssetNode {
-  id: string;
-  locationId: string | null;
-  name: string;
-  parentId: string | null;
-  sensorType: string | null;
-  status: string | null;
+export interface ITreeListContainerProps {
+  treeData: ITreeNode[];
+}
+export interface ITreeListProps {
+  parsedData: any[];
+  setActiveNodes: (nodes: string[]) => void;
+  style: { height: number; width: number; itemHeight: number };
+  activeNodes: string[];
+}
+export interface ITreeNodeToParse {
+  treeNode: ITreeNode;
+  depth: number;
+  itemsList: any[];
+  parentNodes?: ITreeNode[];
+  isLastChild?: boolean;
 }
 
-interface ComponentNode {
-  gatewayId: string;
-  id: string;
-  locationId: string | null;
-  name: string;
-  parentId: string | null;
-  sensorId: string;
-  sensorType: string;
-  status: string;
+export interface ITreeItemProps {
+  style: React.CSSProperties;
+  node: ITreeNode & {
+    depth: number;
+    hasChildren: boolean;
+    isCollapsed: boolean;
+    isLastChild: boolean;
+    parentNodes: ITreeNode[];
+  };
+  onClick: (node: ITreeNode) => void;
+  defaultPadding: number;
+  isNodeFirstLevel: boolean;
+  itemPadding: number;
+  verticalGuideLinesleft: number;
 }
-
-export type TreeNodeType = (LocationNode | AssetNode | ComponentNode) & {
-  children?: TreeNodeType[];
-};

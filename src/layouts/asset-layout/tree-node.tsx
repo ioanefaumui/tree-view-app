@@ -1,23 +1,30 @@
-import React from "react";
-import { TreeNodeType } from "./types";
+const TreeNode: React.FC<{ node: any; style: any }> = ({ node, style }) => {
+  if (!node) return null;
 
-interface TreeNodeProps {
-  node: TreeNodeType;
-}
+  const isChildNode = Boolean(node?.parentId) || Boolean(node?.locationId);
 
-export const TreeNode: React.FC<TreeNodeProps> = ({ node }) => {
+  const paddingLeft = isChildNode ? `${node.level * 20}px` : "0px";
+
   return (
-    <div style={{ paddingLeft: 20 }}>
-      <details>
-        <summary>{node.name}</summary>
-        {node.children && node.children.length > 0 && (
-          <div>
-            {node.children.map((child) => (
-              <TreeNode key={child.id} node={child} />
-            ))}
-          </div>
-        )}
-      </details>
-    </div>
+    <details
+      open
+      style={{ ...style, paddingLeft }}
+      data-is-parent={!isChildNode}
+      data-level={node.level}
+    >
+      <summary>
+        <span className="icon">{getIcon(node)}</span>
+        <span className="name">{node.name}</span>
+      </summary>
+    </details>
   );
 };
+
+const getIcon = (node: any) => {
+  if (node?.type === "location") return "📍";
+  if (node?.type === "asset") return "⚙️";
+  if (node?.type === "component") return "🔧";
+  return "📁";
+};
+
+export default TreeNode;
