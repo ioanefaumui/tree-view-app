@@ -31,15 +31,12 @@ export const buildTree = (
     if (asset.sensorType) {
       // It's a component
       baseAsset.type = "component";
-    } else if (asset.parentId) {
-      // It's a sub-asset
-      baseAsset.type = "asset";
-    } else if (asset.locationId) {
-      // It's an asset with a location
+    } else if (asset.parentId || asset.locationId) {
+      // It's an asset with a parentId or locationId
       baseAsset.type = "asset";
     } else {
       // Unlinked asset/component
-      baseAsset.type = "unlinked";
+      baseAsset.type = "asset";
     }
 
     assetMap.set(asset.id, baseAsset);
@@ -79,6 +76,16 @@ export const buildTree = (
     }
   });
 
+  // Sort nodes alphabetically by name
+  const sortNodes = (nodes) => {
+    nodes.forEach((node) => {
+      if (node.children && node.children.length > 0) {
+        node.children = sortNodes(node.children);
+      }
+    });
+    return nodes.sort((a, b) => a.name.localeCompare(b.name));
+  };
+
   // Set the levels for all nodes and count nodes
   locationMap.forEach((location) => {
     if (!location.parentId) {
@@ -88,12 +95,18 @@ export const buildTree = (
 
   // Add unlinked assets/components to the flattened tree
   assetMap.forEach((asset) => {
-    if (asset.type === "unlinked") {
+    if (asset.type === "asset" && !asset.locationId && !asset.parentId) {
       setLevelsAndFlatten(asset, 0); // Set level 0 for unlinked assets/components
     }
   });
 
   // Filter the top-level locations and return the tree structure, total nodes, and flattened tree
-  const data = Array.from(locationMap.values()).filter((location) => !location.parentId);
-  return { data, totalNodes, flattenedTree };
+  const data = [
+    ...Array.from(locationMap.values()).filter((location) => !location.parentId),
+    ...Array.from(assetMap.values()).filter(
+      (asset) => asset.type === "asset" && !asset.locationId && !asset.parentId
+    ),
+  ];
+
+  return { data: sortNodes(data), totalNodes, flattenedTree };
 };

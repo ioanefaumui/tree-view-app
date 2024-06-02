@@ -3,19 +3,25 @@ import styles from "./asset-layout.module.css";
 import { useTreeView } from "../../hooks";
 import { FixedSizeList as List } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { useState, useMemo, useLayoutEffect } from "react";
+import { useEffect, useState } from "react";
+import { useDebounce } from "./use-debounce";
+import { TreeNode } from "../../components";
 
 export function AssetLayoutContent() {
   const { state } = useLocation();
   const { tree } = useTreeView(state?.companyId);
 
-  const flattenedTree = tree?.flattenedTree;
-
+  const [originalTree, setOriginalTree] = useState([]);
+  const [filteredTree, setFilteredTree] = useState([]);
   const [expandedNodes, setExpandedNodes] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 500); // Use debounce hook
 
-  useLayoutEffect(() => {
-    if (flattenedTree?.length > 0) {
+  useEffect(() => {
+    if (tree?.flattenedTree?.length > 0) {
+      setOriginalTree(tree.flattenedTree); // Save the original tree data
+      setFilteredTree(tree.flattenedTree); // Initialize the filtered tree with original data
+
       const expanded = {};
       const traverse = (nodes = []) => {
         nodes.forEach((node) => {
@@ -25,10 +31,10 @@ export function AssetLayoutContent() {
           }
         });
       };
-      traverse(flattenedTree);
+      traverse(tree.flattenedTree);
       setExpandedNodes(expanded);
     }
-  }, [flattenedTree]);
+  }, [tree]);
 
   const handleToggle = (nodeId) => {
     setExpandedNodes((prev) => ({
@@ -51,31 +57,36 @@ export function AssetLayoutContent() {
   };
 
   const filterNodes = (nodes, searchTerm) => {
-    if (!searchTerm) {
-      return nodes;
-    }
+    const result = [];
 
-    return nodes.reduce((acc, node) => {
-      if (node.name.toLowerCase().includes(searchTerm.toLowerCase())) {
-        acc.push(node);
-      } else if (node.children) {
-        const filteredChildren = filterNodes(node.children, searchTerm);
-        if (filteredChildren.length > 0) {
-          node.children = filteredChildren;
-          acc.push(node);
+    const filterHelper = (nodes) => {
+      return nodes.reduce((acc, node) => {
+        const children = node.children ? filterHelper(node.children) : [];
+        if (
+          node.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          children.length > 0
+        ) {
+          acc.push({ ...node, children });
         }
-      }
-      return acc;
-    }, []);
+        return acc;
+      }, []);
+    };
+
+    result.push(...filterHelper(nodes));
+
+    return result;
   };
 
-  const visibleNodes = useMemo(() => {
-    if (!searchTerm) {
-      return getVisibleNodes(flattenedTree);
+  useEffect(() => {
+    if (!debouncedSearchTerm) {
+      setFilteredTree(originalTree); // Reset to original tree when search term is cleared
+    } else {
+      const filteredNodes = filterNodes(originalTree, debouncedSearchTerm);
+      setFilteredTree(filteredNodes);
     }
-    const filteredNodes = filterNodes(flattenedTree, searchTerm);
-    return getVisibleNodes(filteredNodes);
-  }, [flattenedTree, expandedNodes, searchTerm]);
+  }, [debouncedSearchTerm, originalTree]);
+
+  const visibleNodes = getVisibleNodes(filteredTree); // Calculate visible nodes directly
 
   return (
     <div className={styles.content}>
@@ -93,25 +104,20 @@ export function AssetLayoutContent() {
                 className="List"
                 height={height}
                 itemCount={visibleNodes.length}
-                itemSize={19}
+                itemSize={30}
                 width={width}
+                innerElementType={"ul"}
               >
                 {({ index, style }) => {
                   const node = visibleNodes[index];
+                  const isExpanded = expandedNodes[node.id];
                   return (
-                    <div
-                      style={{
-                        ...style,
-                        paddingLeft: `${node.level * 20}px`,
-                      }}
-                    >
-                      <div onClick={() => handleToggle(node.id)}>
-                        {node.children.length > 0 && (
-                          <span>{expandedNodes[node.id] ? "-" : "+"}</span>
-                        )}
-                        {node.name}
-                      </div>
-                    </div>
+                    <TreeNode
+                      handleToggle={handleToggle}
+                      isExpanded={isExpanded}
+                      node={node}
+                      style={style}
+                    />
                   );
                 }}
               </List>

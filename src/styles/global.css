@@ -6,6 +6,8 @@
   --var-border-card: #d8dfe6;
 
   /* Blue */
+  --var-blue-50: #f2f8ff;
+  --var-blue-400: #55a6ff;
   --var-blue-500: #2188ff;
   --var-blue-900: #023b78;
 
@@ -20,6 +22,13 @@
   /* Writing */
   --var-title: #24292f;
   --var-placeholder-disable: #c1c9d2;
+
+  /* Conditional */
+  --var-divider: #f0f0f0;
+
+  /* Status */
+  --var-alert: #ed3833;
+  --var-ok: #52c41a;
 }
 
 body {

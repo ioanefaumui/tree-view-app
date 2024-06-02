@@ -19,21 +19,28 @@ export function Header() {
       {companies.length > 0 && (
         <nav>
           <ul>
-            {companies.map((c) => (
-              <li key={c.id}>
-                <Link
-                  aria-current={unit === c.name}
-                  state={{ companyId: c.id }}
-                  to={{
-                    pathname: "/ativos",
-                    search: `unidade=${c.name}`,
-                  }}
-                >
-                  <img src={gold} alt="Asset icon" />
-                  <span>{c.name} Unit</span>
-                </Link>
-              </li>
-            ))}
+            {companies.map((c) => {
+              // Clone existing search parameters
+              const currentParams = new URLSearchParams(searchParams);
+              // Set or update the 'unidade' parameter
+              currentParams.set("unidade", c.name);
+
+              return (
+                <li key={c.id}>
+                  <Link
+                    aria-current={unit === c.name}
+                    state={{ companyId: c.id }}
+                    to={{
+                      pathname: "/ativos",
+                      search: currentParams.toString(),
+                    }}
+                  >
+                    <img src={gold} alt="Asset icon" />
+                    <span>{c.name} Unit</span>
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </nav>
       )}
