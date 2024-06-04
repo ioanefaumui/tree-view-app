@@ -36,7 +36,7 @@ export const buildTree = (
       baseAsset.type = "asset";
     } else {
       // Unlinked asset/component
-      baseAsset.type = "asset";
+      baseAsset.type = asset.sensorType ? "component" : "asset";
     }
 
     assetMap.set(asset.id, baseAsset);
@@ -95,7 +95,7 @@ export const buildTree = (
 
   // Add unlinked assets/components to the flattened tree
   assetMap.forEach((asset) => {
-    if (asset.type === "asset" && !asset.locationId && !asset.parentId) {
+    if (!asset.locationId && !asset.parentId) {
       setLevelsAndFlatten(asset, 0); // Set level 0 for unlinked assets/components
     }
   });
@@ -104,7 +104,7 @@ export const buildTree = (
   const data = [
     ...Array.from(locationMap.values()).filter((location) => !location.parentId),
     ...Array.from(assetMap.values()).filter(
-      (asset) => asset.type === "asset" && !asset.locationId && !asset.parentId
+      (asset) => !asset.locationId && !asset.parentId
     ),
   ];
 
