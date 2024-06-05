@@ -1,38 +1,34 @@
-import { useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import styles from "./asset-layout.module.css";
 import { Button, Icon } from "../../components";
+import { useCompanies } from "../../hooks";
 
 export function AssetLayoutHeader() {
+  const { id } = useParams();
+  const { companies } = useCompanies();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const unit = searchParams.get("unidade");
+  const unit = companies.find((c) => c.id === id)?.name;
 
-  const handleFilterToggle = (value: string) => {
-    const currentParams = new URLSearchParams(searchParams);
-    const filtros = currentParams.get("filtros");
-    const filters = filtros ? filtros.split(",") : [];
+  const handleSearchParams = (param: "energy" | "alert") => {
+    const sensor = searchParams.get("sensor");
+    const status = searchParams.get("status");
 
-    if (filters.includes(value)) {
-      // Remove the filter
-      const newFilters = filters.filter((filter) => filter !== value);
-      if (newFilters.length > 0) {
-        currentParams.set("filtros", newFilters.join(","));
-      } else {
-        currentParams.delete("filtros");
-      }
+    if (!sensor && param === "energy") {
+      searchParams.append("sensor", param);
+      setSearchParams(searchParams);
     } else {
-      // Add the filter
-      filters.push(value);
-      currentParams.set("filtros", filters.join(","));
+      searchParams.delete("sensor", param);
+      setSearchParams(searchParams);
     }
 
-    setSearchParams(currentParams);
-  };
-
-  const isFilterActive = (value: string) => {
-    const filtros = searchParams.get("filtros");
-    const filters = filtros ? filtros.split(",") : [];
-    return filters.includes(value);
+    if (!status && param === "alert") {
+      searchParams.append("status", param);
+      setSearchParams(searchParams);
+    } else {
+      searchParams.delete("status", param);
+      setSearchParams(searchParams);
+    }
   };
 
   return (
@@ -49,18 +45,18 @@ export function AssetLayoutHeader() {
 
       <div className="filters">
         <Button
-          data-active={isFilterActive("Sensor de Energia")}
+          data-active={!!searchParams.get("sensor")}
           className="energy-trigger"
-          onClick={() => handleFilterToggle("Sensor de Energia")}
+          onClick={() => handleSearchParams("energy")}
         >
           <Icon icon="tunderbolt" />
           <span>Sensor de Energia</span>
         </Button>
 
         <Button
-          data-active={isFilterActive("Critico")}
+          data-active={!!searchParams.get("status")}
           className="energy-trigger"
-          onClick={() => handleFilterToggle("Critico")}
+          onClick={() => handleSearchParams("alert")}
         >
           <Icon icon="critic" />
           <span>Crítico</span>

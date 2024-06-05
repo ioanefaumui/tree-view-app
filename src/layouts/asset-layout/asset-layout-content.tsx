@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import styles from "./asset-layout.module.css";
 import { useTreeView } from "../../hooks";
 import { FixedSizeList as List } from "react-window";
@@ -10,6 +10,7 @@ import { TreeNode } from "../../components";
 export function AssetLayoutContent() {
   const { state } = useLocation();
   const { tree } = useTreeView(state?.companyId);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [originalTree, setOriginalTree] = useState([]);
   const [filteredTree, setFilteredTree] = useState([]);
@@ -56,14 +57,16 @@ export function AssetLayoutContent() {
     }, []);
   };
 
-  const filterNodes = (nodes, searchTerm) => {
+  const filterNodes = (nodes, searchTerm, status, sensorType) => {
     const result = [];
 
     const filterHelper = (nodes) => {
       return nodes.reduce((acc, node) => {
         const children = node.children ? filterHelper(node.children) : [];
         if (
-          node.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          ((!searchTerm || node.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
+            (!status || node.status === status) &&
+            (!sensorType || node.sensorType === sensorType)) ||
           children.length > 0
         ) {
           acc.push({ ...node, children });
@@ -77,14 +80,21 @@ export function AssetLayoutContent() {
     return result;
   };
 
+  const applyFilters = () => {
+    const status = searchParams.get("status") || "";
+    const sensorType = searchParams.get("sensor") || "";
+    const filteredNodes = filterNodes(
+      originalTree,
+      debouncedSearchTerm,
+      status,
+      sensorType
+    );
+    setFilteredTree(filteredNodes);
+  };
+
   useEffect(() => {
-    if (!debouncedSearchTerm) {
-      setFilteredTree(originalTree); // Reset to original tree when search term is cleared
-    } else {
-      const filteredNodes = filterNodes(originalTree, debouncedSearchTerm);
-      setFilteredTree(filteredNodes);
-    }
-  }, [debouncedSearchTerm, originalTree]);
+    applyFilters();
+  }, [debouncedSearchTerm, searchParams, originalTree]);
 
   const visibleNodes = getVisibleNodes(filteredTree); // Calculate visible nodes directly
 
