@@ -14,6 +14,7 @@
   /* Neutral Colors */
   --var-white: #ffffff;
   --var-gray-150: #e3eaef;
+  --var-gray-500: #88929c;
   --var-gray-600: #77818c;
 
   /* Font */
@@ -34,6 +35,7 @@
 body {
   font-family: var(--var-font-text);
   background-color: var(--var-gray-150);
+  font-size: 0.875rem;
 }
 
 #root {

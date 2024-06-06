@@ -6,7 +6,7 @@ import { buildTree } from "../utils";
 export function useTreeData(companyId: string) {
   const fetcher = () => Promise.all([getLocations(companyId), getAssets(companyId)]);
 
-  const { data } = useSWR("treeData" + companyId, fetcher, {
+  const { data, isLoading } = useSWR("treeData" + companyId, fetcher, {
     revalidateOnFocus: false,
     dedupingInterval: 1000 * 60 * 30,
   });
@@ -19,5 +19,5 @@ export function useTreeData(companyId: string) {
     return buildTree(locations, assets);
   }, [locations, assets]);
 
-  return { treeData };
+  return { treeData, isLoading };
 }

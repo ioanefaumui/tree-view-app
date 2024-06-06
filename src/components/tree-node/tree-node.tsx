@@ -31,6 +31,7 @@ export function TreeNode({ node, style, isExpanded, handleToggle }: TreeNodeProp
             transform: isExpanded ? "" : "rotate(-90deg)",
             position: "relative",
             paddingBlock: "4px",
+            minWidth: "24px",
           }}
         >
           <img src={expandArrow} alt="Tree node expansion indicator" />
