@@ -1,9 +1,16 @@
+import { CSSProperties } from "react";
 import expandArrow from "../../assets/icons/expand-arrow.png";
+import { Node } from "../../types";
 import { Icon } from "../icon";
 
-export function TreeNode({ node, style, isExpanded, handleToggle }) {
-  // TODO: type props
+interface TreeNodeProps {
+  node: Node;
+  style: CSSProperties;
+  isExpanded: Node["isExpanded"];
+  handleToggle: (nodeId: string) => void;
+}
 
+export function TreeNode({ node, style, isExpanded, handleToggle }: TreeNodeProps) {
   const hasChildren = node.children.length > 0;
   const hasParent = node.parentId ?? node.locationId;
   const statusColor = node.status !== "alert" ? "var(--var-ok)" : "var(--var-alert)";
