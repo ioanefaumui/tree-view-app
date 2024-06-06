@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import logo from "../../assets/logo-tractian.png";
-import gold from "../../assets/icons/gold.png";
+import gold from "../../assets/gold.png";
 import styles from "./header.module.css";
 import { useCompanies } from "../../hooks/use-companies";
 

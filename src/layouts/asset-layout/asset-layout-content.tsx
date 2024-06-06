@@ -120,8 +120,8 @@ export function AssetLayoutContent() {
                   src="https://random.imagecdn.app/336/226"
                   alt=""
                   style={{
-                    width: 336,
-                    height: 226,
+                    minWidth: 336,
+                    minHeight: 226,
                     backgroundColor: "var(--var-border-card)",
                   }}
                 />

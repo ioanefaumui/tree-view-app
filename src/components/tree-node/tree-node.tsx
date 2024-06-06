@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import expandArrow from "../../assets/icons/expand-arrow.png";
+import expandArrow from "../../assets/expand-arrow.png";
 import { Node } from "../../types";
 import { Icon } from "../icon";
 
