@@ -1,3 +1,12 @@
 import { Location } from "./location";
 
-export interface Asset extends Location {}
+type SensorType = "energy" | "vibration";
+
+type Status = "alert" | "operating";
+
+export interface Asset extends Location {
+  locationId: string | null;
+  sensorId: string | null;
+  sensorType: SensorType;
+  status: Status;
+}

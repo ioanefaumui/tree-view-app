@@ -1,18 +1,11 @@
 import { Node } from "../types";
 
-interface FilterNodesProps {
-  nodes: Node[];
-  searchTerm?: string;
-  status?: Node["status"];
-  sensorType?: Node["sensorType"];
-}
-
-export const filterNodes = ({
-  nodes = [],
-  searchTerm,
-  sensorType,
-  status,
-}: FilterNodesProps) => {
+export const filterNodes = (
+  nodes: Node[],
+  searchTerm: string,
+  status: Node["status"],
+  sensorType: Node["sensorType"]
+) => {
   const result: Node[] = [];
 
   const filterHelper = (nodes: Node[]) => {

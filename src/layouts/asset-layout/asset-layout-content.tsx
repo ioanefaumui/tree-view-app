@@ -6,7 +6,9 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { useEffect, useState } from "react";
 import { useDebounce } from "./use-debounce";
 import { TreeNode } from "../../components";
-import { getVisibleNodes } from "../../utils";
+import { filterNodes, getVisibleNodes } from "../../utils";
+import { useExpandedNodes } from "../../hooks/use-expanded-nodes";
+import { Node } from "../../types";
 
 export function AssetLayoutContent() {
   const { state } = useLocation();
@@ -15,7 +17,8 @@ export function AssetLayoutContent() {
 
   const [originalTree, setOriginalTree] = useState([]);
   const [filteredTree, setFilteredTree] = useState([]);
-  const [expandedNodes, setExpandedNodes] = useState({});
+  // const [expandedNodes, setExpandedNodes] = useState({});
+  const { expandedNodes, handleToggle, setExpandedNodes } = useExpandedNodes();
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounce(searchTerm, 500); // Use debounce hook
 
@@ -38,35 +41,28 @@ export function AssetLayoutContent() {
     }
   }, [tree]);
 
-  const handleToggle = (nodeId) => {
-    setExpandedNodes((prev) => ({
-      ...prev,
-      [nodeId]: !prev[nodeId],
-    }));
-  };
+  // const filterNodes = (nodes, searchTerm, status, sensorType) => {
+  //   const result = [];
 
-  const filterNodes = (nodes, searchTerm, status, sensorType) => {
-    const result = [];
+  //   const filterHelper = (nodes) => {
+  //     return nodes.reduce((acc, node) => {
+  //       const children = node.children ? filterHelper(node.children) : [];
+  //       if (
+  //         ((!searchTerm || node.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
+  //           (!status || node.status === status) &&
+  //           (!sensorType || node.sensorType === sensorType)) ||
+  //         children.length > 0
+  //       ) {
+  //         acc.push({ ...node, children });
+  //       }
+  //       return acc;
+  //     }, []);
+  //   };
 
-    const filterHelper = (nodes) => {
-      return nodes.reduce((acc, node) => {
-        const children = node.children ? filterHelper(node.children) : [];
-        if (
-          ((!searchTerm || node.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
-            (!status || node.status === status) &&
-            (!sensorType || node.sensorType === sensorType)) ||
-          children.length > 0
-        ) {
-          acc.push({ ...node, children });
-        }
-        return acc;
-      }, []);
-    };
+  //   result.push(...filterHelper(nodes));
 
-    result.push(...filterHelper(nodes));
-
-    return result;
-  };
+  //   return result;
+  // };
 
   const applyFilters = () => {
     const status = searchParams.get("status") || "";
@@ -74,8 +70,8 @@ export function AssetLayoutContent() {
     const filteredNodes = filterNodes(
       originalTree,
       debouncedSearchTerm,
-      status,
-      sensorType
+      status as Node["status"],
+      sensorType as Node["sensorType"]
     );
     setFilteredTree(filteredNodes);
   };
