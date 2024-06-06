@@ -1,10 +1,9 @@
 import { useLocation, useSearchParams } from "react-router-dom";
 import styles from "./asset-layout.module.css";
-import { useTreeView } from "../../hooks";
+import { useDebounce, useTreeData } from "../../hooks";
 import { FixedSizeList as List } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { useEffect, useState } from "react";
-import { useDebounce } from "./use-debounce";
+import { useCallback, useEffect, useState } from "react";
 import { TreeNode } from "../../components";
 import { filterNodes, getVisibleNodes } from "../../utils";
 import { useExpandedNodes } from "../../hooks/use-expanded-nodes";
@@ -12,23 +11,23 @@ import { Node } from "../../types";
 
 export function AssetLayoutContent() {
   const { state } = useLocation();
-  const { tree } = useTreeView(state?.companyId);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const companyId = state?.companyId;
+  const { treeData } = useTreeData(companyId);
+  const [searchParams] = useSearchParams();
 
-  const [originalTree, setOriginalTree] = useState([]);
-  const [filteredTree, setFilteredTree] = useState([]);
-  // const [expandedNodes, setExpandedNodes] = useState({});
+  const [originalTree, setOriginalTree] = useState<Node[]>([]);
+  const [filteredTree, setFilteredTree] = useState<Node[]>([]);
   const { expandedNodes, handleToggle, setExpandedNodes } = useExpandedNodes();
   const [searchTerm, setSearchTerm] = useState("");
-  const debouncedSearchTerm = useDebounce(searchTerm, 500); // Use debounce hook
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   useEffect(() => {
-    if (tree?.flattenedTree?.length > 0) {
-      setOriginalTree(tree.flattenedTree); // Save the original tree data
-      setFilteredTree(tree.flattenedTree); // Initialize the filtered tree with original data
+    if (treeData.length > 0) {
+      setOriginalTree(treeData);
+      setFilteredTree(treeData);
 
-      const expanded = {};
-      const traverse = (nodes = []) => {
+      const expanded: { [key: string]: boolean } = {};
+      const traverse = (nodes: Node[] = []) => {
         nodes.forEach((node) => {
           expanded[node.id] = node.isExpanded;
           if (node.children && node.children.length > 0) {
@@ -36,49 +35,26 @@ export function AssetLayoutContent() {
           }
         });
       };
-      traverse(tree.flattenedTree);
+      traverse(treeData);
       setExpandedNodes(expanded);
     }
-  }, [tree]);
+  }, [treeData, setExpandedNodes]);
 
-  // const filterNodes = (nodes, searchTerm, status, sensorType) => {
-  //   const result = [];
-
-  //   const filterHelper = (nodes) => {
-  //     return nodes.reduce((acc, node) => {
-  //       const children = node.children ? filterHelper(node.children) : [];
-  //       if (
-  //         ((!searchTerm || node.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
-  //           (!status || node.status === status) &&
-  //           (!sensorType || node.sensorType === sensorType)) ||
-  //         children.length > 0
-  //       ) {
-  //         acc.push({ ...node, children });
-  //       }
-  //       return acc;
-  //     }, []);
-  //   };
-
-  //   result.push(...filterHelper(nodes));
-
-  //   return result;
-  // };
-
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     const status = searchParams.get("status") || "";
     const sensorType = searchParams.get("sensor") || "";
     const filteredNodes = filterNodes(
-      originalTree,
+      originalTree || [],
       debouncedSearchTerm,
       status as Node["status"],
       sensorType as Node["sensorType"]
     );
     setFilteredTree(filteredNodes);
-  };
+  }, [debouncedSearchTerm, searchParams, originalTree]);
 
   useEffect(() => {
     applyFilters();
-  }, [debouncedSearchTerm, searchParams, originalTree]);
+  }, [debouncedSearchTerm, searchParams, originalTree, applyFilters]);
 
   const visibleNodes = getVisibleNodes(filteredTree, expandedNodes);
 

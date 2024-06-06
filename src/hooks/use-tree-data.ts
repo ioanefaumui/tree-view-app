@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { getAssets, getLocations } from "../api/http";
 import { useMemo } from "react";
-import { buildTree } from "../layouts/asset-layout/build-tree";
+import { buildTree } from "../utils";
 
 export function useTreeData(companyId: string) {
   const fetcher = () => Promise.all([getLocations(companyId), getAssets(companyId)]);

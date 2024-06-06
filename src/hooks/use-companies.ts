@@ -8,7 +8,7 @@ export function useCompanies() {
     error,
   } = useSWR("companies", getCompanies, {
     revalidateOnFocus: false,
-    dedupingInterval: 60000,
+    dedupingInterval: 1000 * 60 * 30,
   });
 
   const sortedCompanies = data.sort((a, b) => a.name.localeCompare(b.name));
