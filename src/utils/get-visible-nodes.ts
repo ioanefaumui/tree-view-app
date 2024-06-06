@@ -3,7 +3,7 @@ import { Node } from "../types";
 export const getVisibleNodes = (
   nodes: Node[],
   expandedNodes: { [key: string]: boolean },
-  parentId = null,
+  parentId: Node["parentId"] = null,
   level = 0
 ) => {
   return nodes.reduce((acc: Node[], node) => {
