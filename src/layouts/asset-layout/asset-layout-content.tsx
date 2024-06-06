@@ -6,6 +6,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { useEffect, useState } from "react";
 import { useDebounce } from "./use-debounce";
 import { TreeNode } from "../../components";
+import { getVisibleNodes } from "../../utils";
 
 export function AssetLayoutContent() {
   const { state } = useLocation();
@@ -42,19 +43,6 @@ export function AssetLayoutContent() {
       ...prev,
       [nodeId]: !prev[nodeId],
     }));
-  };
-
-  const getVisibleNodes = (nodes = [], parentId = null, level = 0) => {
-    return nodes.reduce((acc, node) => {
-      if (node.parentId === parentId) {
-        node.level = level;
-        acc.push(node);
-        if (expandedNodes[node.id] && node.children.length > 0) {
-          acc = acc.concat(getVisibleNodes(node.children, node.id, level + 1));
-        }
-      }
-      return acc;
-    }, []);
   };
 
   const filterNodes = (nodes, searchTerm, status, sensorType) => {
@@ -96,7 +84,7 @@ export function AssetLayoutContent() {
     applyFilters();
   }, [debouncedSearchTerm, searchParams, originalTree]);
 
-  const visibleNodes = getVisibleNodes(filteredTree); // Calculate visible nodes directly
+  const visibleNodes = getVisibleNodes(filteredTree, expandedNodes);
 
   return (
     <div className={styles.content}>

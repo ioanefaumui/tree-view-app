@@ -14,7 +14,7 @@ export function TreeNode({ node, style, isExpanded, handleToggle }) {
       onClick={() => handleToggle(node.id)}
       style={{
         ...style,
-        width: "100dvh",
+        width: "100vw",
         paddingLeft: `${node.level * 24}px`,
       }}
     >

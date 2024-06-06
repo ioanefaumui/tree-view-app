@@ -1,5 +1,5 @@
 export interface Location {
   id: string;
   name: string;
-  parentId: string;
+  parentId: string | null;
 }
