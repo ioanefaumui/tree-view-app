@@ -1,5 +1,7 @@
 # Tree View App
 
+![alt text](image.png)
+
 This project is a tree view application built with React and TypeScript. The main focus of the project is to create an efficient tree view component using virtualization to ensure high performance with large datasets.
 
 ## Features
